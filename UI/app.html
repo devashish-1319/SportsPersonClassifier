@@ -1,144 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sports Person Classifier</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="./dropzone.min.css">
+    <title>Athlete Vision — Sports Person Classifier</title>
+    <meta name="description" content="Upload a photo and an AI model tells you which athlete is in it.">
+    <meta name="theme-color" content="#0b0d17">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./app.css">
 </head>
-
 <body>
-    <nav class="navbar navbar-light bg-light justify-content-center">
-        <a class="navbar-brand" href="#">Sports Person Classifier</a>
-    </nav>
+    <div class="bg-glow" aria-hidden="true"></div>
 
-    <div class="container">
-        <div class="row">
-        <div class="col card-wrapper" data-player="lionel_messi">
-                <div class="card border-0">
-                    <div class="position-relative rounded-circle overflow-hidden mx-auto custom-circle-image">
-                        <img class="w-100 h-100" src="./images/messi.jpeg" alt="Card image cap">
-                    </div>
-                    <div class="card-body text-center mt-4">
-                        <h4 class="text-uppercase card-title">Lionel Messi</h4>
-                        </p>
-                    </div>
-                </div>
-            </div>            
-            <div class="col card-wrapper" data-player="maria_sharapova">
-                    <div class="card border-0">
-                        <div class="position-relative rounded-circle overflow-hidden mx-auto custom-circle-image">
-                            <img class="w-100 h-100" src="./images/sharapova.jpeg" alt="Card image cap">
+    <header class="nav">
+        <div class="brand"><span class="brand-mark">◎</span> Athlete Vision</div>
+        <a class="nav-link" href="#how">How it works</a>
+    </header>
+
+    <main>
+        <section class="hero">
+            <p class="eyebrow">Face recognition · runs on your own server</p>
+            <h1>Who's the <span class="grad">athlete</span> in the photo?</h1>
+            <p class="sub">Drop in a picture and the model picks out every face and tells you which of five sports stars it is — with a confidence score for each.</p>
+        </section>
+
+        <section class="roster" aria-label="Athletes the model knows">
+            <div class="chip" data-player="lionel_messi"><img src="./images/messi.jpeg" alt=""><span>Lionel Messi</span></div>
+            <div class="chip" data-player="maria_sharapova"><img src="./images/sharapova.jpeg" alt=""><span>Maria Sharapova</span></div>
+            <div class="chip" data-player="roger_federer"><img src="./images/federer.jpeg" alt=""><span>Roger Federer</span></div>
+            <div class="chip" data-player="serena_williams"><img src="./images/serena.jpeg" alt=""><span>Serena Williams</span></div>
+            <div class="chip" data-player="virat_kohli"><img src="./images/virat.jpeg" alt=""><span>Virat Kohli</span></div>
+        </section>
+
+        <section class="workspace">
+            <div class="panel upload-panel">
+                <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Upload an image">
+                    <input id="fileInput" type="file" accept="image/*" hidden>
+                    <div id="dzEmpty" class="dz-empty">
+                        <div class="dz-icon">
+                            <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m0 0L7 9m5-5 5 5"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
                         </div>
-                        <div class="card-body text-center mt-4">
-                            <h4 class="text-uppercase card-title">Maria Sharapova</h4>
-                            </p>
-                        </div>
+                        <p class="dz-title">Drop an image here</p>
+                        <p class="dz-hint">or click to browse · or paste from clipboard (<kbd>⌘</kbd>/<kbd>Ctrl</kbd> + <kbd>V</kbd>)</p>
                     </div>
-            </div>            
-            <div class="col card-wrapper" data-player="roger_federer">
-                    <div class="card border-0">
-                        <div class="position-relative rounded-circle overflow-hidden mx-auto custom-circle-image">
-                            <img class="w-100 h-100" src="./images/federer.jpeg" alt="Card image cap">
-                        </div>
-                        <div class="card-body text-center mt-4">
-                            <h4 class="text-uppercase card-title">Roger Federer</h4>
-                            </p>
-                        </div>
-                    </div>
-            </div>          
-
-            <div class="col card-wrapper" data-player="serena_williams">
-                <div class="card border-0">
-                    <div class="position-relative rounded-circle overflow-hidden mx-auto custom-circle-image">
-                        <img class="w-100 h-100" src="./images/serena.jpeg" alt="Card image cap">
-                    </div>
-                    <div class="card-body text-center mt-4">
-                        <h4 class="text-uppercase card-title">Serena Williams</h4>
-                        </p>
+                    <div id="stage" class="stage" hidden>
+                        <img id="preview" alt="Selected photo">
+                        <div id="boxes" class="boxes"></div>
+                        <div id="scan" class="scan" hidden></div>
                     </div>
                 </div>
-            </div>      
 
-            <div class="col card-wrapper" data-player="virat_kohli">
-                <div class="card border-0">
-                    <div class="position-relative rounded-circle overflow-hidden mx-auto custom-circle-image">
-                        <img class="w-100 h-100" src="./images/virat.jpeg" alt="Card image cap">
-                    </div>
-                    <div class="card-body text-center mt-4">
-                        <h4 class="text-uppercase card-title">Virat Kohli</h4>
-                        </p>
+                <div class="actions">
+                    <button id="classifyBtn" class="btn primary" disabled>
+                        <span class="btn-label">Classify</span>
+                        <span class="btn-spinner" hidden></span>
+                    </button>
+                    <button id="clearBtn" class="btn ghost" hidden>Clear</button>
+                </div>
+
+                <div class="samples">
+                    <p class="samples-title">No photo handy? Try one:</p>
+                    <div class="sample-row">
+                        <button class="sample" data-src="./test_images/kohli_1.jpg" title="Sample 1"><img src="./test_images/kohli_1.jpg" alt="Sample 1"></button>
+                        <button class="sample" data-src="./test_images/kohli_2.jpg" title="Sample 2"><img src="./test_images/kohli_2.jpg" alt="Sample 2"></button>
+                        <button class="sample" data-src="./test_images/sharapova_1.jpg" title="Sample 3"><img src="./test_images/sharapova_1.jpg" alt="Sample 3"></button>
+                        <button class="sample" data-src="./test_images/sharapova_2.jpg" title="Sample 4"><img src="./test_images/sharapova_2.jpg" alt="Sample 4"></button>
                     </div>
                 </div>
             </div>
 
-        </div>
-
-        <div class="row">
-            <div class="col-sm-4">
-                <div class="row">
-                    <div class="col-12 mx-auto">
-                        <form action="/file-upload" class="dropzone" id="dropzone">
-                            <div class="dz-message needsclick">
-                                <img src="./images/upload.png" width="50vw" height="50vw"><br>
-                                <span class="note needsclick">Drop files here or click to upload</span>
-                            </div>
-                        </form>
-                    </div>
+            <div class="panel result-panel" aria-live="polite">
+                <div id="placeholder" class="placeholder">
+                    <div class="ph-ring"></div>
+                    <p>Results will appear here</p>
                 </div>
-                <div class="row mt-3">
-                    <div class="col-3 mx-auto">
-                        <button id="submitBtn" type="button" class="btn btn-success">Classify</button>
-                    </div>
-                </div>
+                <div id="message" class="message" hidden></div>
+                <div id="results" class="results" hidden></div>
             </div>
-            
-            <div class="col-sm-8 error" id="error" >
-                <p>Can't classify image. Classifier was not able to detect face and two eyes properly</p>    
-            </div>
+        </section>
 
-            <div class="col-sm-4" id="resultHolder">
-            </div>
-            <div class="col-sm-4" id="divClassTable">
-                <table id="classTable">
-                        <tr>
-                            <th>Player</th>
-                            <th>Probability Score</th>
-                        </tr>
-                        <tr>
-                            <td>Leonel Messi</td>
-                            <td id="score_lionel_messi"></td>
-                        </tr>
-                        <tr>
-                            <td>Maria Sharapova</td>
-                            <td id="score_maria_sharapova"></td>
-                        </tr>
-                        <tr>
-                            <td>Rodger Federer</td>
-                            <td id="score_roger_federer"></td>
-                        </tr>
-                        <tr>
-                            <td>Serena Williams</td>
-                            <td id="score_serena_williams"></td>
-                        </tr>
-                        <tr>
-                            <td>Virat Kohli</td>
-                            <td id="score_virat_kohli"></td>
-                        </tr>
-                </table>
-            </div>
-            
-        </div>
+        <section id="how" class="how">
+            <h2>How it works</h2>
+            <ol class="steps">
+                <li><span class="step-n">1</span><div><strong>Detect</strong><p>YuNet finds every face in the photo, even small or angled ones.</p></div></li>
+                <li><span class="step-n">2</span><div><strong>Embed</strong><p>SFace turns each aligned face into a 128-number fingerprint.</p></div></li>
+                <li><span class="step-n">3</span><div><strong>Classify</strong><p>A trained SVM compares the fingerprint to the five athletes and reports probabilities. Low confidence? It says <em>unknown</em> instead of guessing.</p></div></li>
+            </ol>
+        </section>
+    </main>
 
-    </div>
+    <footer class="footer">
+        Built as a learning project. Trained on a small set of public photos — not for identifying private individuals.
+    </footer>
 
+    <script src="./app.js"></script>
 </body>
-<!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script> -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-<script src="./dropzone.min.js"></script>
-<script src="./app.js"></script>
 </html>
